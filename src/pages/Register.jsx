@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../store/authThunk';
 
 function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {loading, error} = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
-    hin: '',
+    hIN: '',
     name: '',
     username: '',
     email: '',
@@ -15,7 +19,6 @@ function Register() {
   });
 
   const [errors, setErrors] = useState({});
-  const [generalError, setGeneralError] = useState('');
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
@@ -23,14 +26,13 @@ function Register() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
-    setGeneralError('');
   };
 
   const validateForm = () => {
     const newErrors = {};
-    const { hin, name, username, email, password, phoneNumber, address } = formData;
+    const { hIN, name, username, email, password, phoneNumber, address } = formData;
 
-    if (!hin) newErrors.hin = 'HIN is required';
+    if (!hIN) newErrors.hIN = 'hIN is required';
     if (!name) newErrors.name = 'Name is required';
     if (!username) newErrors.username = 'Username is required';
     if (!email) newErrors.email = 'Email is required';
@@ -44,54 +46,39 @@ function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("from submitted" , formData);
+    
     if (!validateForm()) return;
 
-    const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
-    const userExists = existingUsers.find((user) => user.email === formData.email);
-
-    if (userExists) {
-      setGeneralError('User already exists, please login.');
-      return;
-    }
-
-    const newUser = { ...formData };
-    existingUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(existingUsers));
-
-    setFormData({
-      hin: '',
-      name: '',
-      username: '',
-      email: '',
-      password: '',
-      phoneNumber: '',
-      address: '',
-    });
-    setErrors({});
-    setGeneralError('');
+  
+  try{
+    const res = await dispatch(registerUser(formData)).unwrap();
     navigate('/');
-  };
+  }catch (err) {
+    console.log(err);
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit} className="w-full max-w-md p-6 space-y-4 bg-white rounded shadow-md">
         <h2 className="text-2xl font-semibold text-center">Register</h2>
 
-        {generalError && <p className="text-sm text-center text-red-500">{generalError}</p>}
+        {error && <p className="text-sm text-center text-red-500">{error}</p>}
         <div>
-          <label htmlFor="hin" className="block mb-1">HIN:</label>
+          <label htmlFor="hIN" className="block mb-1">hIN:</label>
           <input
-            id="hin"
-            name="hin"
+            id="hIN"
+            name="hIN"
             type="text"
-            placeholder="Enter your HIN"
-            className={`w-full p-2 border rounded ${errors.hin ? 'border-red-500' : 'border-gray-300'}`}
-            value={formData.hin}
+            placeholder="Enter your hIN"
+            className={`w-full p-2 border rounded ${errors.hIN ? 'border-red-500' : 'border-gray-300'}`}
+            value={formData.hIN}
             onChange={handleChange}
           />
-          {errors.hin && <p className="text-xs text-red-500">{errors.hin}</p>}
+          {errors.hIN && <p className="text-xs text-red-500">{errors.hIN}</p>}
         </div>
 
          <div>
@@ -103,6 +90,7 @@ function Register() {
             placeholder="Enter your username"
             className={`w-full p-2 border rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.username}
+            autoComplete="username"
             onChange={handleChange}
           />
           {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
@@ -117,8 +105,11 @@ function Register() {
             placeholder="Enter your password"
             className={`w-full p-2 border rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.password}
+             autoComplete="current-password"
             onChange={handleChange}
           />
+
+
           {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
         </div>
         <div>
@@ -179,9 +170,10 @@ function Register() {
         <button
           type="submit"
           className="w-full py-2 font-medium text-white bg-green-500 rounded hover:bg-green-600"
+          disabled={loading}
         >
-          Register
-        </button>
+          {loading ? 'Registering...' : 'Register'}
+          </button>
 
         <p className="text-sm text-center">
           Already have an account?{' '}
