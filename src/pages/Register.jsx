@@ -80,7 +80,6 @@ function Register() {
         <h2 className="text-2xl font-semibold text-center">Register</h2>
 
         {generalError && <p className="text-sm text-center text-red-500">{generalError}</p>}
-
         <div>
           <label htmlFor="hin" className="block mb-1">HIN:</label>
           <input
