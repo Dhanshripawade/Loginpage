@@ -8,22 +8,22 @@ function Login() {
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
+  const [username, setusername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!username || !password) {
       setMessage('Both fields are required');
       return;
     }
 
     try {
-      const user = await dispatch(loginUser({ email, password })).unwrap();
+      const user = await dispatch(loginUser({ username, password })).unwrap();
       localStorage.setItem('currentUser', JSON.stringify(user));
-      setEmail('');
+      setusername('');
       setPassword('');
       navigate('/home');
     } catch (err) {
@@ -41,14 +41,21 @@ function Login() {
             {error || message}
           </p>
         )}
+        
+          <div>
+          <label htmlFor="password" className="block mb-1">Username:</label>
 
         <input
-          type="email"
-          placeholder="Email"
+          type="username"
+          placeholder="username"
           className="w-full p-2 border rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={username}
+          onChange={(e) => setusername(e.target.value)}
         />
+        </div>
+        <div>
+          <label htmlFor="password" className="block mb-1">Password:</label>
+        
         <input
           type="password"
           placeholder="Password"
@@ -57,6 +64,7 @@ function Login() {
           autoComplete="current-password"
           onChange={(e) => setPassword(e.target.value)}
         />
+        </div>
         <button
           type="submit"
           className="w-full py-2 text-white bg-blue-500 rounded hover:bg-blue-600"

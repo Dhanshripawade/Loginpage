@@ -105,7 +105,7 @@ function Register() {
             placeholder="Enter your password"
             className={`w-full p-2 border rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.password}
-             autoComplete="current-password"
+             autoComplete="new-password"
             onChange={handleChange}
           />
 
@@ -121,6 +121,8 @@ function Register() {
             placeholder="Enter your name"
             className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.name}
+            autoComplete="name"
+
             onChange={handleChange}
           />
           {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
@@ -134,6 +136,8 @@ function Register() {
             placeholder="Enter your email"
             className={`w-full p-2 border rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.email}
+            autoComplete="email"
+
             onChange={handleChange}
           />
           {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
@@ -148,6 +152,8 @@ function Register() {
             placeholder="Enter your phone number"
             className={`w-full p-2 border rounded ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.phoneNumber}
+            autoComplete="tel"
+
             onChange={handleChange}
           />
           {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber}</p>}
@@ -162,6 +168,8 @@ function Register() {
             placeholder="Enter your address"
             className={`w-full p-2 border rounded ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.address}
+            autoComplete="street-address"
+
             onChange={handleChange}
           />
           {errors.address && <p className="text-xs text-red-500">{errors.address}</p>}

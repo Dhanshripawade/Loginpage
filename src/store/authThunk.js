@@ -1,14 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL; // Replace with your actual API URL
+// const API_URL = import.meta.env.VITE_API_URL; 
 
 // Login Thunk
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/admin/login`, credentials);
+      const response = await axios.post('http://localhost:8000/admin/login', credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Login failed");
