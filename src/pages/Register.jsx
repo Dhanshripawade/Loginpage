@@ -122,7 +122,7 @@ function Register() {
             className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
             value={formData.name}
             autoComplete="name"
-
+            
             onChange={handleChange}
           />
           {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}

@@ -23,6 +23,8 @@ function Login() {
     try {
       const user = await dispatch(loginUser({ username, password })).unwrap();
       localStorage.setItem('currentUser', JSON.stringify(user));
+      console.log(user);
+      
       setusername('');
       setPassword('');
       navigate('/home');
