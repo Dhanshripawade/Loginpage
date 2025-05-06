@@ -6,7 +6,7 @@ export const registerDoctor = createAsyncThunk(
   "auth/registerDoctor",
   async (formData, thunkAPI) => {
     const adminToken = localStorage.getItem("currentUser");
-    console.log("currrr:",adminToken);
+    // console.log("currrr:",adminToken);
     
     try {
       const response = await axios.post(

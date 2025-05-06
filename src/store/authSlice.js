@@ -1,9 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { loginUser, registerUser } from './authThunk';
+import { loginUser, registerUser, getConsltantData , updateDoctor , 
+  registerReception,getallreception,deleteReception,
+  viewReception ,updateReception,getallPatient,savepatient,updatePatients,
+  deletePatient} from './authThunk';
 import { jwtDecode } from 'jwt-decode'; 
 
 const initialState = {
   user: null,
+  consultant: [],
+  Reception:[],
+  receptionId:[],
+  patient:[],
   token: null,
   loading: false,
   error: null,
@@ -65,7 +72,145 @@ const authSlice = createSlice({
         //   state.user = null;
         // }
         localStorage.setItem('token', action.payload.token);
-      });
+      })
+
+      //getconsultant Data
+      .addCase(getConsltantData.pending,(state)=>{
+        state.status="loading"
+      })
+      .addCase(getConsltantData.fulfilled,(state,action)=>{
+        state.status ="succeeded",
+        state.consultant=action.payload;
+      })
+      .addCase(getConsltantData.rejected,(state,action)=>{
+        state.status="failed",
+        state.error=action.error.message;
+      })
+
+      // doctor  update
+      .addCase(updateDoctor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDoctor.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        
+      })
+      .addCase(updateDoctor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+     
+      })
+
+     //getallreceptionsit 
+      .addCase(getallreception.pending,(state)=>{
+        state.status="loading"
+      })
+      .addCase(getallreception.fulfilled,(state,action)=>{
+        state.status="succeeded",
+        state.Reception=action.payload;
+      })
+      .addCase(getallreception.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.error.message;
+      })
+
+      // create Reception
+      .addCase(registerReception.pending,(state)=>{
+        state.status="loading"
+      })
+      .addCase(registerReception.fulfilled,(state,action)=>{
+        state.status="succeeded",
+        state.user=action.payload;
+      })
+      .addCase(registerReception.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.error.message;
+      })
+//delete
+.addCase(deleteReception.fulfilled, (state, action) => {
+  state.data = state.data.filter((patient) => patient._id !== action.payload);
+
+})
+
+//view
+.addCase(viewReception.pending, (state) => {
+  state.status = "loading";
+})
+.addCase(viewReception.fulfilled, (state, action) => {
+  state.status = "succeeded";
+  state.receptionId = action.payload;
+})
+.addCase(viewReception.rejected, (state, action) => {
+  state.status = "failed";
+  state.error = action.payload;
+})
+
+//reception update
+.addCase(updateReception.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(updateReception.fulfilled, (state, action) => {
+  state.loading = false;
+  state.user = action.payload;
+  
+})
+.addCase(updateReception.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+
+})
+
+//get all patients
+
+ .addCase(getallPatient.pending,(state)=>{
+  state.status="loading"
+})
+.addCase(getallPatient.fulfilled,(state,action)=>{
+  state.status ="succeeded",
+  state.patient=action.payload;
+})
+.addCase(getallPatient.rejected,(state,action)=>{
+  state.status="failed",
+  state.error=action.error.message;
+})
+
+    // create patients
+    .addCase(savepatient.pending,(state)=>{
+      state.status="loading"
+    })
+    .addCase(savepatient.fulfilled,(state,action)=>{
+      state.status="succeeded",
+      state.patient=action.payload;
+    })
+    .addCase(savepatient.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.error.message;
+    })
+
+    //delete
+    .addCase(deletePatient.fulfilled, (state, action) => {
+      state.data = state.data.filter((patient) => patient._id !== action.payload);
+    
+    })
+
+    .addCase(updatePatients.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(updatePatients.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+      
+    })
+    .addCase(updatePatients.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    
+    })
+
   },
 });
 

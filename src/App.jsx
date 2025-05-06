@@ -1,11 +1,18 @@
 // App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './pages/Sidebar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ConsultantLogin from './pages/Consultant/ConsultantLogin';
-import ConsultantRegister from './pages/Consultant/ConsultantRegister';
-import ConsultantHome from './pages/Consultant/ConsultantHome';
+import ConsultantLogin from './pages/ConsultantLogin';
+import ConsultantRegister from './pages/ConsultantRegister';
+import Dashboard from './pages/Dashboard';
+import Patient from './pages/Patient';
+import Receptionist from './pages/Receptionist';
+import Appointment from './pages/Appointment';
+import PatientDeatails from './pages/PatientDeatails';
+import Departments from './pages/Departments';
+import NotFound from './pages/NotFound';
+
 
 function App() {
   return (
@@ -16,7 +23,16 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/doctor/login" element={<ConsultantLogin />} />
         <Route path="/doctor/register" element={<ConsultantRegister />} />
-        <Route path='/consultantHome' element={<ConsultantHome/>}/>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/patient" element={<Patient />} />
+        <Route path="/receptionists" element={<Receptionist />} />
+        <Route path="/appointment" element={<Appointment />} />
+        <Route path="/patientdeatails" element={<PatientDeatails />} />
+        <Route path="/department" element={<Departments />} />
+        <Route path="/notfound" element={<NotFound />} />
+
+
+        
       </Routes>
     </BrowserRouter>
   );
