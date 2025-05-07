@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { response } from "express";
 
 
 
@@ -70,7 +71,21 @@ export const updateDoctor = createAsyncThunk(
     }
   }
 );
-
+//view Doctor
+export const viewDoctor = createAsyncThunk("auth/viewDoctor", async (cIN, thunkAPI) => {
+  try {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const token = user?.token;
+    const response = await axios.get(`http://localhost:8000/admin/consutantbyid/${cIN}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return response.data.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || "Get data by ID failed");
+  }
+});
 
 // Delete Doctor Thunk
 export const deleteDoctor = createAsyncThunk(
@@ -151,7 +166,7 @@ export const deleteReception = createAsyncThunk(
 );
 
 //view receptionsists
-export const viewReception = createAsyncThunk("viewReception", async (rID, thunkAPI) => {
+export const viewReception = createAsyncThunk("auth/viewReception", async (rID, thunkAPI) => {
   try {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
@@ -265,5 +280,25 @@ export const updatePatients = createAsyncThunk(
     }
   }
 );
+
+
+//view
+
+// export const viewPatient = createAsyncThunk("auth/viewPatient" , async (id , thunkAPI) =>
+// {
+//   try{
+//     const user = JSON.parse(localStorage.getItem("currentUser"));
+//     const token = user?.token;
+//     const response = await axios.get(`http://localhost:8000/admin/getbyid/${id}`,{
+//       headers:{
+//         Authorization : token ,
+//       },
+//     });
+//     return response.data.data;
+//   }
+//   catch(err){
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || "Get data by ID failed");
+//   }
+// });
 
 

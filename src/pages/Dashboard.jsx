@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerDoctor } from "../store/consultant/consultantThunk";
-import { deleteDoctor,updateDoctor ,getConsltantData} from "../store/authThunk";
+import { deleteDoctor,updateDoctor ,getConsltantData , viewDoctor} from "../store/authThunk";
 import Home from "./Sidebar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +13,11 @@ function Dashboard() {
   const { consultant } = useSelector((state) => state.auth);
   const [consultantdata, setconsultantdata] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
 
   const toggleForm = () => setShowForm((prev) => !prev);
 
@@ -22,7 +27,10 @@ function Dashboard() {
 
   useEffect(() => {
     setconsultantdata(consultant);
+    setShowModal(false);
   }, [consultant]);
+
+   
 
   const [formData, setFormData] = useState({
     cIN: "",
@@ -40,11 +48,7 @@ function Dashboard() {
     password: "",
   });
 
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -79,17 +83,23 @@ function Dashboard() {
       setShowForm(false);
       setIsEditing(false);
       setEditingId(null);
-      dispatch(getConsultantData());
+      dispatch(getConsltantData());
     } catch (err) {
       console.error("Error submitting form:", err);
       toast.error("Error occurred, please try again!");
     }
   };
 
-  const handleView = (item) => {
-    setModalData(item);
-    setShowModal(true);
+  const handleView = async (cIN) => {
+    try {
+      await dispatch(viewDoctor(cIN)).unwrap();
+      setShowViewModal(true);
+    } catch (error) {
+      console.error("View error:", error);
+      toast.error("Failed to load receptionist details.");
+    }
   };
+
 
   const handleEdit = (item) => {
     setFormData({
@@ -222,9 +232,10 @@ function Dashboard() {
                   <td className="px-4 py-2 border">{item.username}</td>
                   <td className="px-4 py-2 border">
                     <div className="flex justify-center gap-2">
-                      <button onClick={() => handleView(item)} title="View">
-                        <FaEye className="text-blue-600 hover:text-blue-800" />
-                      </button>
+                     <FaEye
+                                             className="text-blue-600 hover:text-blue-800"
+                                             onClick={() => handleView(item.cIN)}
+                                           />
                       <button onClick={() => handleEdit(item)} title="Edit">
                         <FaEdit className="text-green-600 hover:text-green-700" />
                       </button>
@@ -248,12 +259,12 @@ function Dashboard() {
 
         <ToastContainer />
 
-        {showModal && modalData && (
+        {showModal && showViewModal && (
           <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
             <div className="relative p-6 bg-white rounded shadow-lg w-100">
               <h2 className="mb-2 text-lg font-bold text-center">Consultant Details</h2>
               <ul className="space-y-1 text-sm">
-                {Object.entries(modalData).map(([key, value]) => (
+                {Object.entries(consultantdata).map(([key, value]) => (
                   <li key={key}>
                     <strong>{key}:</strong> {value}
                   </li>

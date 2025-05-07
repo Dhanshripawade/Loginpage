@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { loginUser, registerUser, getConsltantData , updateDoctor , 
   registerReception,getallreception,deleteReception,
   viewReception ,updateReception,getallPatient,savepatient,updatePatients,
-  deletePatient} from './authThunk';
+  deletePatient , viewDoctor } from './authThunk';
 import { jwtDecode } from 'jwt-decode'; 
 
 const initialState = {
@@ -86,6 +86,21 @@ const authSlice = createSlice({
         state.status="failed",
         state.error=action.error.message;
       })
+
+
+      //viewDoctor
+      .addCase(viewDoctor.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(viewDoctor.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.consultant = action.payload;
+      })
+      .addCase(viewDoctor.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
 
       // doctor  update
       .addCase(updateDoctor.pending, (state) => {
@@ -210,6 +225,20 @@ const authSlice = createSlice({
       state.error = action.payload;
     
     })
+
+    //vire reception
+    // .addCase(viewReception.pending, (state) => {
+    //   state.status = "loading";
+    // })
+    // .addCase(viewReception.fulfilled, (state, action) => {
+    //   state.status = "succeeded";
+    //   state.receptionId = action.payload;
+    // })
+    // .addCase(viewReception.rejected, (state, action) => {
+    //   state.status = "failed";
+    //   state.error = action.payload;
+    // })
+    
 
   },
 });
