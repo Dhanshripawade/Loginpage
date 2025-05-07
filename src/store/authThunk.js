@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { response } from "express";
+
 
 
 
@@ -72,20 +72,26 @@ export const updateDoctor = createAsyncThunk(
   }
 );
 //view Doctor
-export const viewDoctor = createAsyncThunk("auth/viewDoctor", async (cIN, thunkAPI) => {
-  try {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    const token = user?.token;
-    const response = await axios.get(`http://localhost:8000/admin/consutantbyid/${cIN}`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-    return response.data.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || "Get data by ID failed");
+export const viewDoctor = createAsyncThunk(
+  "auth/viewDoctor",
+  async (cIN, { rejectWithValue }) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      const token = user?.token;
+      const response = await axios.get(`http://localhost:8000/admin/consutantbyid/${cIN}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      console.log("API Response:", response.data.data); // Debugging
+      return response.data.data; // Ensure this is the consultant object
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Get data by ID failed");
+    }
   }
-});
+);
+
 
 // Delete Doctor Thunk
 export const deleteDoctor = createAsyncThunk(
@@ -139,7 +145,6 @@ export const getallreception=createAsyncThunk("auth/getallreception",async(_,{re
       }
     });
     console.log(response.data.data);
-    
     return response.data,data;
   }catch(err){
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Registration failed');
@@ -301,4 +306,60 @@ export const updatePatients = createAsyncThunk(
 //   }
 // });
 
+//get department
+export const getallDepartment = createAsyncThunk("auth/getallDepartment",async(_,{rejectWithValue})=>{
+  try{
+    const user =JSON.parse(localStorage.getItem('currentUser'));
+    const token =user?.token;
+    
+    const response =await axios.get("http://localhost:8000/admin/alldepartment",{
+                headers:{
+                  Authorization:token
+                }
+    });
+    console.log(response.data.data);
+    
+    return response.data.data
+  }catch(err){
+           return rejectWithValue(err.response?.data?.message || "Failed to get data")
+  }
+})
 
+
+//create departments
+export const registerDepartment =createAsyncThunk("auth/registerDepartment",async(formData,{rejectWithValue})=>{
+  try{
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const token=user?.token;
+    const response=await axios.post("http://localhost:8000/admin/createdepartment",formData,{
+      headers:{
+        Authorization:token
+      }
+    });
+    console.log(response.data.data);
+    
+    return response.data,data;
+  }catch(err){
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Registration failed');
+
+  }
+})
+
+
+//delete departments
+export const deleteDepartment = createAsyncThunk(
+  "auth/deleteDepartment",
+  async (_id, { rejectWithValue }) => {
+    const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
+    try {
+      const response = await axios.delete(`http://localhost:8000/admin/deletedepartment/${_id}`, {
+        headers: {
+          Authorization: adminToken
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Delete failed");
+    }
+  }
+);

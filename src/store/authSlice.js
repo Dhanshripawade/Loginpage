@@ -1,16 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { loginUser, registerUser, getConsltantData , updateDoctor , 
   registerReception,getallreception,deleteReception,
-  viewReception ,updateReception,getallPatient,savepatient,updatePatients,
-  deletePatient , viewDoctor } from './authThunk';
+  viewReception ,updateReception,getallPatient,savepatient,updatePatients,getallDepartment,
+  deletePatient , viewDoctor, 
+  registerDepartment,
+  deleteDepartment} from './authThunk';
 import { jwtDecode } from 'jwt-decode'; 
 
 const initialState = {
   user: null,
   consultant: [],
+  consultantId:[],
   Reception:[],
   receptionId:[],
   patient:[],
+  department : [],
   token: null,
   loading: false,
   error: null,
@@ -93,12 +97,12 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(viewDoctor.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.consultant = action.payload;
+       ( state.status = "succeeded"),
+        (state.consultantId = action.payload);
       })
       .addCase(viewDoctor.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.loading = "failed";
+        state.error = action.error.message;
       })
 
 
@@ -238,7 +242,42 @@ const authSlice = createSlice({
     //   state.status = "failed";
     //   state.error = action.payload;
     // })
+
+
+    //get all departments
+    .addCase(getallDepartment.pending,(state)=>{
+      state.status="loading"
+    })
+    .addCase(getallDepartment.fulfilled,(state,action)=>{
+      state.status ="succeeded",
+      state.department=action.payload;
+    })
+    .addCase(getallDepartment.rejected,(state,action)=>{
+      state.status="failed",
+      state.error=action.error.message;
+    })
     
+
+    //create departments
+    .addCase(registerDepartment.pending,(state)=>{
+      state.status="loading"
+    })
+    .addCase(registerDepartment.fulfilled,(state,action)=>{
+      state.status="succeeded",
+      state.department=action.payload;
+    })
+    .addCase(registerDepartment.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.error.message;
+    })
+
+//delete department
+.addCase(deleteDepartment.fulfilled, (state, action) => {
+  state.data = state.data.filter((department) => department._id !== action.payload);
+
+})
+
+
 
   },
 });

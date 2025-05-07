@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerDoctor } from "../store/consultant/consultantThunk";
-import { deleteDoctor,updateDoctor ,getConsltantData , viewDoctor} from "../store/authThunk";
+import {
+  deleteDoctor,
+  updateDoctor,
+  getConsltantData,
+  viewDoctor,
+} from "../store/authThunk";
 import Home from "./Sidebar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,28 +15,28 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 function Dashboard() {
   const dispatch = useDispatch();
 
-  const { consultant } = useSelector((state) => state.auth);
+  const { consultant, consultantId } = useSelector((state) => state.auth);
+  const [consultantAllData, setconsultantAllData] = useState(null); 
   const [consultantdata, setconsultantdata] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
 
-  const toggleForm = () => setShowForm((prev) => !prev);
+  const toggleForm = () => setShowForm(!showForm);
 
   useEffect(() => {
     dispatch(getConsltantData());
   }, [dispatch]);
 
   useEffect(() => {
-    setconsultantdata(consultant);
-    setShowModal(false);
-  }, [consultant]);
+    setconsultantAllData(consultant);
+   }, [consultant]);
 
-   
-
+ 
+  
+ 
   const [formData, setFormData] = useState({
     cIN: "",
     name: "",
@@ -48,7 +53,6 @@ function Dashboard() {
     password: "",
   });
 
-  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -58,7 +62,9 @@ function Dashboard() {
     e.preventDefault();
     try {
       if (isEditing) {
-        await dispatch(updateDoctor({ id: editingId, updatedData: formData })).unwrap();
+        await dispatch(
+          updateDoctor({ id: editingId, updatedData: formData })
+        ).unwrap();
         toast.success("Consultant updated successfully!");
       } else {
         await dispatch(registerDoctor(formData)).unwrap();
@@ -90,16 +96,28 @@ function Dashboard() {
     }
   };
 
-  const handleView = async (cIN) => {
+
+ const handleView = async (cIN) => {
     try {
-      await dispatch(viewDoctor(cIN)).unwrap();
-      setShowViewModal(true);
+      const result = await dispatch(viewDoctor(cIN)).unwrap();
+      setconsultantdata(result);          
+      setShowViewModal(true);            
     } catch (error) {
       console.error("View error:", error);
-      toast.error("Failed to load receptionist details.");
+      toast.error("Failed to load consultant details.");
     }
   };
-
+  
+  useEffect(() => {
+    if (consultantId) {
+      setconsultantdata(consultantId);
+     
+    }
+  }, [consultantId]);
+  
+    
+  console.log(consultantId);
+   
 
   const handleEdit = (item) => {
     setFormData({
@@ -121,19 +139,14 @@ function Dashboard() {
     setEditingId(item._id || item.id);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this consultant?")) {
-      try {
-        await dispatch(deleteDoctor(id)).unwrap();
-        toast.success("Consultant deleted successfully!");
-        dispatch(getConsultantData());
-      } catch (err) {
-        toast.error("Error deleting consultant.");
-        console.error("Delete error:", err);
-      }
-    }
+  const handleDelete = (id) => {
+    window.confirm(
+      "Are you sure deAre you sure you want to delete this consultant?"
+    );
+    dispatch(deleteDoctor(id));
     window.location.reload();
   };
+  
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -143,7 +156,7 @@ function Dashboard() {
 
       <main className="flex-1 p-6 overflow-auto">
         <h1 className="mb-4 text-xl font-semibold">Consultants</h1>
-        
+
         <div className="mb-4 text-end">
           <button
             onClick={toggleForm}
@@ -167,10 +180,18 @@ function Dashboard() {
               { name: "specialty", placeholder: "Specialty" },
               { name: "phoneNumber", placeholder: "Phone Number" },
               { name: "gender", placeholder: "Gender" },
-              { name: "medicalLicenseNumber", placeholder: "Medical License No.", type: "number" },
+              {
+                name: "medicalLicenseNumber",
+                placeholder: "Medical License No.",
+                type: "number",
+              },
               { name: "dateOfBirth", placeholder: "DOB", type: "date" },
               { name: "qualifications", placeholder: "Qualification" },
-              { name: "yearsOfExperience", placeholder: "Years of Experience", type: "number" },
+              {
+                name: "yearsOfExperience",
+                placeholder: "Years of Experience",
+                type: "number",
+              },
             ].map(({ name, placeholder, type = "text" }) => (
               <input
                 key={name}
@@ -215,7 +236,7 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {consultant?.map((item, index) => (
+              {consultantAllData?.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-4 py-2 border">{item.cIN}</td>
                   <td className="px-4 py-2 border">{item.name}</td>
@@ -223,7 +244,9 @@ function Dashboard() {
                   <td className="px-4 py-2 border">{item.dateOfBirth}</td>
                   <td className="px-4 py-2 border">{item.specialty}</td>
                   <td className="px-4 py-2 border">{item.qualifications}</td>
-                  <td className="px-4 py-2 border">{item.medicalLicenseNumber}</td>
+                  <td className="px-4 py-2 border">
+                    {item.medicalLicenseNumber}
+                  </td>
                   <td className="px-4 py-2 border">{item.yearsOfExperience}</td>
                   <td className="px-4 py-2 border">
                     {item.email}
@@ -232,53 +255,61 @@ function Dashboard() {
                   <td className="px-4 py-2 border">{item.username}</td>
                   <td className="px-4 py-2 border">
                     <div className="flex justify-center gap-2">
-                     <FaEye
-                                             className="text-blue-600 hover:text-blue-800"
-                                             onClick={() => handleView(item.cIN)}
-                                           />
+                      <FaEye
+                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => handleView(item.cIN)}
+                      />
                       <button onClick={() => handleEdit(item)} title="Edit">
                         <FaEdit className="text-green-600 hover:text-green-700" />
                       </button>
-                      <button onClick={() => handleDelete(item._id || item.id)} title="Delete">
+                      <button
+                        onClick={() => handleDelete(item._id || item.id)}
+                        title="Delete"
+                      >
                         <FaTrash className="text-red-600 hover:text-red-700" />
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {consultant?.length === 0 && (
-                <tr>
-                  <td colSpan="11" className="px-4 py-2 text-center border">
-                    No consultant data found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
 
-        <ToastContainer />
+        {showViewModal && consultantdata && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="p-6 bg-white rounded shadow-lg w-50">
+      <h2 className="mb-4 text-xl font-semibold text-center">
+        Consultant Details
+      </h2>
+      <ul className="mb-4 space-y-2 text-sm">
+        <li><strong>cIN:</strong> {consultantdata.cIN}</li>
+        <li><strong>Name:</strong> {consultantdata.name}</li>
+        <li><strong>Gender:</strong> {consultantdata.gender}</li>
+        <li><strong>Email:</strong> {consultantdata.email}</li>
+        <li><strong>DOB:</strong> {consultantdata.dateOfBirth}</li>
+        <li><strong>Specialization:</strong> {consultantdata.specialization}</li>
+        <li><strong>Specialty:</strong> {consultantdata.specialty}</li>
+        <li><strong>Qualification:</strong> {consultantdata.qualifications}</li>
+        <li><strong>Medical Licence No:</strong> {consultantdata.medicalLicenseNumber}</li>
+        <li><strong>Phone:</strong> {consultantdata.phoneNumber}</li>
+        <li><strong>Experience (Years):</strong> {consultantdata.yearsOfExperience}</li>
+        <li><strong>Username:</strong> {consultantdata.username}</li>
+        
+        <li><strong>Updated At:</strong> {consultantdata.updatedAt}</li>
+        <li><strong>Created At:</strong> {consultantdata.createdAt}</li>
+      </ul>
+      <button
+        onClick={() => setShowViewModal(false)}
+        className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
 
-        {showModal && showViewModal && (
-          <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="relative p-6 bg-white rounded shadow-lg w-100">
-              <h2 className="mb-2 text-lg font-bold text-center">Consultant Details</h2>
-              <ul className="space-y-1 text-sm">
-                {Object.entries(consultantdata).map(([key, value]) => (
-                  <li key={key}>
-                    <strong>{key}:</strong> {value}
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="absolute text-gray-600 top-2 right-2 hover:text-black"
-                onClick={() => setShowModal(false)}
-              >
-                ✖
-              </button>
-            </div>
-          </div>
-        )}
+        <ToastContainer />
       </main>
     </div>
   );

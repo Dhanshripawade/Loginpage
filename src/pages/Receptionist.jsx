@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Receptionist() {
   const dispatch = useDispatch();
-  const { Reception, status, error, receptionId } = useSelector(
+  const { Reception,  receptionId } = useSelector(
     (state) => state.auth
   );
 
@@ -96,7 +96,7 @@ function Receptionist() {
   
 
   const handleDelete = (id) => {
-    window.confirm("Are you sure delete receptionsits")
+    window.confirm("Are you sure deAre you sure you want to delete this receptionsits?")
     dispatch(deleteReception(id));
     window.location.reload();
   };
@@ -149,8 +149,8 @@ function Receptionist() {
           </button>
         </div>
 
-        {status === "loading" && <p>Loading receptionists...</p>}
-        {status === "failed" && <p className="text-red-500">Error: {error}</p>}
+        {/* {status === "loading" && <p>Loading receptionists...</p>}
+        {status === "failed" && <p className="text-red-500">Error: {error}</p>} */}
 
         
         {showForm && (
