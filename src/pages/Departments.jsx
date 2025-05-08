@@ -5,6 +5,8 @@ import {
   deleteDepartment,
   getallDepartment,
   registerDepartment,
+  updateDepartment,
+  viewDepartment,
 } from "../store/authThunk";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
@@ -12,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Departments() {
   const dispatch = useDispatch();
-  const { department } = useSelector((state) => state.auth);
+  const { department, departmentdIN } = useSelector((state) => state.auth);
   const [departmentData, setDepartmentData] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
@@ -39,22 +41,52 @@ function Departments() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     await dispatch(registerDepartment(formData)).unwrap();
+  //     toast.success("Department created successfully!");
+  //     setFormData({ dIN: "", name: "", description: "" });
+  //     setShowForm(false);
+  //     dispatch(getallDepartment());
+  //   } catch (error) {
+  //     toast.error("Failed to create department.");
+  //   }
+  //   window.location.reload();
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(registerDepartment(formData)).unwrap();
-      toast.success("Department created successfully!");
-      setFormData({ dIN: "", name: "", description: "" });
+      if (isEditing) {
+        await dispatch(
+          updateDepartment({ id: editingId, updatedData: formData })
+        ).unwrap();
+        toast.success("Consultant updated successfully!");
+      } else {
+        await dispatch(registerDepartment(formData)).unwrap();
+        toast.success("Consultant created successfully!");
+      }
+
+      setFormData({
+        dIN: "",
+        name: "",
+        description: "",
+      });
       setShowForm(false);
+      setIsEditing(false);
+      setEditingId(null);
       dispatch(getallDepartment());
-    } catch (error) {
-      toast.error("Failed to create department.");
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      toast.error("Error occurred, please try again!");
     }
-    window.location.reload();
   };
 
+  //delete
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this department?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this department?"
+    );
     if (confirmed) {
       try {
         await dispatch(deleteDepartment(id)).unwrap();
@@ -65,13 +97,46 @@ function Departments() {
       }
     }
     window.location.reload();
+  };
+  //view
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [alldepartment, setAlldepartment] = useState([]);
+  const handleView = async (dIN) => {
+    try {
+      await dispatch(viewDepartment(dIN)).unwrap();
+      setShowViewModal(true);
+    } catch (error) {
+      console.error("View error:", error);
+      toast.error("Failed to load receptionist details.");
+    }
+  };
 
+  useEffect(() => {
+    if (departmentdIN) {
+      setAlldepartment(departmentdIN[0]);
+      setShowViewModal(false);
+    }
+  }, [departmentdIN]);
+  console.log(departmentdIN);
+
+  //update
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const handleEdit = (item) => {
+    setFormData({
+      dIN: item.dIN || "",
+      name: item.name || "",
+      description: item.description || "",
+    });
+    setShowForm(true);
+    setIsEditing(true);
+    setEditingId(item._id || item.id);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      
+
       <div>
         <Home />
       </div>
@@ -87,8 +152,8 @@ function Departments() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="relative w-full max-w-md p-6 bg-white rounded shadow-lg">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ">
+            <div className="relative p-6 bg-white rounded shadow-lg min-w-[700px]">
               <button
                 onClick={toggleForm}
                 className="absolute text-2xl font-bold text-gray-500 top-2 right-2 hover:text-red-600"
@@ -150,8 +215,13 @@ function Departments() {
                   <td className="px-4 py-2 border">{item.description}</td>
                   <td className="px-4 py-2 border">
                     <div className="flex justify-center gap-3">
-                      <FaEye className="text-blue-600 cursor-pointer hover:text-blue-800" />
-                      <FaEdit className="text-green-600 cursor-pointer hover:text-green-800" />
+                      <FaEye
+                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => handleView(item.dIN)}
+                      />
+                      <button onClick={() => handleEdit(item)} title="Edit">
+                        <FaEdit className="text-green-600 hover:text-green-700" />
+                      </button>
                       <FaTrash
                         onClick={() => handleDelete(item._id)}
                         className="text-red-500 cursor-pointer hover:text-red-700"
@@ -163,6 +233,43 @@ function Departments() {
             </tbody>
           </table>
         </div>
+
+        {showViewModal && alldepartment && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+            <div className="p-6 bg-white rounded shadow-lg w-50">
+              <h2 className="mb-4 text-xl font-semibold text-center">
+                Receptionist Details
+              </h2>
+              <ul className="mb-4 space-y-2 text-sm">
+              <li>
+                  <strong>dIN:</strong> {alldepartment.dIN}
+                </li>
+                <li>
+                  <strong>_id:</strong> {alldepartment._id}
+                </li>
+                <li>
+                  <strong>name:</strong> {alldepartment.name}
+                </li>
+                <li>
+                  <strong>Description:</strong> {alldepartment.description}
+                </li>
+               
+                <li>
+                  <strong>_createdAt:</strong> {alldepartment.createdAt}
+                </li>
+                <li>
+                  <strong>_updatedAt:</strong> {alldepartment.updatedAt}
+                </li>
+              </ul>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

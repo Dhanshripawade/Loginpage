@@ -288,6 +288,30 @@ export const updatePatients = createAsyncThunk(
 
 
 //view
+export const viewPatient = createAsyncThunk(
+  "auth/viewPatient",
+  async (id, { rejectWithValue }) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      const token = user?.token;
+      const response = await axios.get(
+        `http://localhost:8000/admin/getbyid/${id}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data.data);
+
+      return response.data.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "get data by id failed"
+      );
+    }
+  }
+);
 
 // export const viewPatient = createAsyncThunk("auth/viewPatient" , async (id , thunkAPI) =>
 // {
@@ -363,3 +387,43 @@ export const deleteDepartment = createAsyncThunk(
     }
   }
 );
+
+//View department
+export const viewDepartment = createAsyncThunk("auth/viewDepartment", async (dIN, {thunkAPI}) => {
+  try {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const token = user?.token;
+    const response = await axios.get(`http://localhost:8000/admin/departmentbyid/${dIN}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    console.log(response.data.data);
+    return response.data.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || "Get data by ID failed");
+  }
+});
+
+//update departments
+export const updateDepartment = createAsyncThunk("auth/updateDepartment"  , 
+     async ({id , updatedData} , {rejectWithValue}) =>
+     {
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      const token = user?.token;
+      try{
+        const response = await axios.patch(`http://localhost:8000/admin/updatedepartment/${id}`, updatedData ,{
+          headers : {
+            Authorization : token,
+          },
+        });
+        console.log(response.data);
+        return response.data;
+      } catch(error) {
+        return rejectWithValue(error.response?.data || "Update failed");
+      }
+     }
+
+    );
+
+

@@ -4,7 +4,10 @@ import { loginUser, registerUser, getConsltantData , updateDoctor ,
   viewReception ,updateReception,getallPatient,savepatient,updatePatients,getallDepartment,
   deletePatient , viewDoctor, 
   registerDepartment,
-  deleteDepartment} from './authThunk';
+  deleteDepartment,
+  viewDepartment,
+  updateDepartment,
+  viewPatient} from './authThunk';
 import { jwtDecode } from 'jwt-decode'; 
 
 const initialState = {
@@ -14,7 +17,10 @@ const initialState = {
   Reception:[],
   receptionId:[],
   patient:[],
+  patientId : [],
   department : [],
+  departmentdIN: [],
+
   token: null,
   loading: false,
   error: null,
@@ -215,6 +221,8 @@ const authSlice = createSlice({
     
     })
 
+
+    //update patients
     .addCase(updatePatients.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -242,6 +250,17 @@ const authSlice = createSlice({
     //   state.status = "failed";
     //   state.error = action.payload;
     // })
+
+    .addCase(viewPatient.pending, (state) => {
+      state.status = "loading";
+    })
+    .addCase(viewPatient.fulfilled, (state, action) => {
+      (state.status = "succeeded"), (state.patientId = action.payload);
+    })
+    .addCase(viewPatient.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.error.message;
+    })
 
 
     //get all departments
@@ -276,6 +295,37 @@ const authSlice = createSlice({
   state.data = state.data.filter((department) => department._id !== action.payload);
 
 })
+
+//view Department
+.addCase(viewDepartment.pending, (state) => {
+  state.status = "loading";
+})
+.addCase(viewDepartment.fulfilled, (state, action) => {
+  state.status = "succeeded";
+  state.departmentdIN = action.payload;
+})
+.addCase(viewDepartment.rejected, (state, action) => {
+  state.status = "failed";
+  state.error = action.payload;
+})
+
+//update department
+
+.addCase(updateDepartment.pending , (state) =>{
+  state.status = "loading";
+  state.error = "null";
+})
+.addCase (updateDepartment.fulfilled, (state,action) => {
+  state.loading = "false";
+  state.user = action.payload;
+})
+.addCase(updateDepartment.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+})
+
+
+
 
 
 

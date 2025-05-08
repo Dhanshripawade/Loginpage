@@ -16,13 +16,12 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const { consultant, consultantId } = useSelector((state) => state.auth);
-  const [consultantAllData, setconsultantAllData] = useState(null); 
+  const [consultantAllData, setconsultantAllData] = useState(null);
   const [consultantdata, setconsultantdata] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-
 
   const toggleForm = () => setShowForm(!showForm);
 
@@ -32,18 +31,15 @@ function Dashboard() {
 
   useEffect(() => {
     setconsultantAllData(consultant);
-   }, [consultant]);
+  }, [consultant]);
 
- 
-  
- 
   const [formData, setFormData] = useState({
     cIN: "",
     name: "",
     gender: "",
     email: "",
     dateOfBirth: "",
-    specialization: "",
+   
     specialty: "",
     qualifications: "",
     medicalLicenseNumber: "",
@@ -77,7 +73,6 @@ function Dashboard() {
         gender: "",
         email: "",
         dateOfBirth: "",
-        specialization: "",
         specialty: "",
         qualifications: "",
         medicalLicenseNumber: "",
@@ -96,28 +91,27 @@ function Dashboard() {
     }
   };
 
-
- const handleView = async (cIN) => {
+  const handleView = async (cIN) => {
     try {
       const result = await dispatch(viewDoctor(cIN)).unwrap();
-      setconsultantdata(result);          
-      setShowViewModal(true);            
+      setconsultantdata(result);
+      setShowViewModal(true);
     } catch (error) {
       console.error("View error:", error);
       toast.error("Failed to load consultant details.");
     }
   };
-  
+
   useEffect(() => {
     if (consultantId) {
       setconsultantdata(consultantId);
-     
+      
     }
   }, [consultantId]);
   
-    
+
+
   console.log(consultantId);
-   
 
   const handleEdit = (item) => {
     setFormData({
@@ -146,7 +140,6 @@ function Dashboard() {
     dispatch(deleteDoctor(id));
     window.location.reload();
   };
-  
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -167,49 +160,64 @@ function Dashboard() {
         </div>
 
         {showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="absolute right-0 z-10 grid grid-cols-1 gap-4 p-4 mb-6 ml-5 bg-gray-300 rounded-md shadow md:grid-cols-2 text-end"
-          >
-            {[
-              { name: "cIN", placeholder: "CIN" },
-              { name: "name", placeholder: "Name" },
-              { name: "username", placeholder: "Username" },
-              { name: "password", placeholder: "Password", type: "password" },
-              { name: "email", placeholder: "Email", type: "email" },
-              { name: "specialty", placeholder: "Specialty" },
-              { name: "phoneNumber", placeholder: "Phone Number" },
-              { name: "gender", placeholder: "Gender" },
-              {
-                name: "medicalLicenseNumber",
-                placeholder: "Medical License No.",
-                type: "number",
-              },
-              { name: "dateOfBirth", placeholder: "DOB", type: "date" },
-              { name: "qualifications", placeholder: "Qualification" },
-              {
-                name: "yearsOfExperience",
-                placeholder: "Years of Experience",
-                type: "number",
-              },
-            ].map(({ name, placeholder, type = "text" }) => (
-              <input
-                key={name}
-                type={type}
-                name={name}
-                placeholder={placeholder}
-                value={formData[name]}
-                className="p-2 border rounded"
-                onChange={handleInputChange}
-              />
-            ))}
-            <button
-              type="submit"
-              className="w-full col-span-1 px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 md:col-span-2"
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <form
+              onSubmit={handleSubmit}
+              className="relative grid min-w-[700px] grid-cols-1 gap-4 p-6 bg-white rounded-md shadow-lg md:grid-cols-2"
             >
-              {isEditing ? "Update" : "Create"}
-            </button>
-          </form>
+            
+
+              {[
+                { name: "cIN", placeholder: "CIN" },
+                { name: "name", placeholder: "Name" },
+                { name: "username", placeholder: "Username" },
+                { name: "password", placeholder: "Password", type: "password" },
+                { name: "email", placeholder: "Email", type: "email" },
+                { name: "specialty", placeholder: "Specialty" },
+                { name: "phoneNumber", placeholder: "Phone Number" },
+                { name: "gender", placeholder: "Gender" },
+                {
+                  name: "medicalLicenseNumber",
+                  placeholder: "Medical License No.",
+                  type: "number",
+                },
+                { name: "dateOfBirth", placeholder: "DOB", type: "date" },
+                { name: "qualifications", placeholder: "Qualification" },
+                {
+                  name: "yearsOfExperience",
+                  placeholder: "Years of Experience",
+                  type: "number",
+                },
+              ].map(({ name, placeholder, type = "text" }) => (
+                <input
+                  key={name}
+                  type={type}
+                  name={name}
+                  placeholder={placeholder}
+                  value={formData[name]}
+                  className="p-2 border rounded"
+                  onChange={handleInputChange}
+                />
+              ))}
+
+<div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
+                <button
+                  type="submit"
+                  className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+                >
+                  {isEditing ? "Update" : "Create"}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleForm}
+                  className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                  aria-label="Close"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
         <div className="relative mt-4 overflow-x-auto">
@@ -277,37 +285,66 @@ function Dashboard() {
         </div>
 
         {showViewModal && consultantdata && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="p-6 bg-white rounded shadow-lg w-50">
-      <h2 className="mb-4 text-xl font-semibold text-center">
-        Consultant Details
-      </h2>
-      <ul className="mb-4 space-y-2 text-sm">
-        <li><strong>cIN:</strong> {consultantdata.cIN}</li>
-        <li><strong>Name:</strong> {consultantdata.name}</li>
-        <li><strong>Gender:</strong> {consultantdata.gender}</li>
-        <li><strong>Email:</strong> {consultantdata.email}</li>
-        <li><strong>DOB:</strong> {consultantdata.dateOfBirth}</li>
-        <li><strong>Specialization:</strong> {consultantdata.specialization}</li>
-        <li><strong>Specialty:</strong> {consultantdata.specialty}</li>
-        <li><strong>Qualification:</strong> {consultantdata.qualifications}</li>
-        <li><strong>Medical Licence No:</strong> {consultantdata.medicalLicenseNumber}</li>
-        <li><strong>Phone:</strong> {consultantdata.phoneNumber}</li>
-        <li><strong>Experience (Years):</strong> {consultantdata.yearsOfExperience}</li>
-        <li><strong>Username:</strong> {consultantdata.username}</li>
-        
-        <li><strong>Updated At:</strong> {consultantdata.updatedAt}</li>
-        <li><strong>Created At:</strong> {consultantdata.createdAt}</li>
-      </ul>
-      <button
-        onClick={() => setShowViewModal(false)}
-        className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="p-6 bg-white rounded shadow-lg w-50">
+              <h2 className="mb-4 text-xl font-semibold text-center">
+                Consultant Details
+              </h2>
+              <ul className="mb-4 space-y-2 text-sm">
+                <li>
+                  <strong>cIN:</strong> {consultantdata[0].cIN}
+                </li>
+                <li>
+                  <strong>Name:</strong> {consultantdata[0].name}
+                </li>
+                <li>
+                  <strong>Gender:</strong> {consultantdata[0].gender}
+                </li>
+                <li>
+                  <strong>Email:</strong> {consultantdata[0].email}
+                </li>
+                <li>
+                  <strong>DOB:</strong> {consultantdata[0].dateOfBirth}
+                </li>
+                
+                <li>
+                  <strong>Specialty:</strong> {consultantdata[0].specialty}
+                </li>
+                <li>
+                  <strong>Qualification:</strong>{" "}
+                  {consultantdata[0].qualifications}
+                </li>
+                <li>
+                  <strong>Medical Licence No:</strong>{" "}
+                  {consultantdata[0].medicalLicenseNumber}
+                </li>
+                <li>
+                  <strong>Phone:</strong> {consultantdata[0].phoneNumber}
+                </li>
+                <li>
+                  <strong>Experience (Years):</strong>{" "}
+                  {consultantdata[0].yearsOfExperience}
+                </li>
+                <li>
+                  <strong>Username:</strong> {consultantdata[0].username}
+                </li>
+               
+                <li>
+                  <strong>Updated At:</strong> {consultantdata[0].updatedAt}
+                </li>
+                <li>
+                  <strong>Created At:</strong> {consultantdata[0].createdAt}
+                </li>
+              </ul>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
 
         <ToastContainer />
       </main>
