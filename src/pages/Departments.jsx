@@ -17,6 +17,9 @@ function Departments() {
   const { department, departmentdIN } = useSelector((state) => state.auth);
   const [departmentData, setDepartmentData] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+
 
   const [formData, setFormData] = useState({
     dIN: "",
@@ -83,21 +86,25 @@ function Departments() {
   };
 
   //delete
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this department?"
-    );
-    if (confirmed) {
-      try {
-        await dispatch(deleteDepartment(id)).unwrap();
-        toast.success("Department deleted successfully!");
-        dispatch(getallDepartment());
-      } catch (error) {
-        toast.error("Failed to delete department.");
-      }
-    }
-    window.location.reload();
+  const handleDelete = (id) => {
+    setSelectedDeleteId(id);
+    setShowDeleteConfirm(true);
   };
+
+  const confirmDelete = async () => {
+    try {
+      await dispatch(deleteDepartment(selectedDeleteId)).unwrap();
+      toast.success("Department deleted successfully!");
+      dispatch(getallDepartment()); 
+    } catch (err) {
+      toast.error("Failed to delete department.");
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedDeleteId(null);
+    }
+  };
+  
+  
   //view
   const [showViewModal, setShowViewModal] = useState(false);
   const [alldepartment, setAlldepartment] = useState([]);
@@ -143,24 +150,21 @@ function Departments() {
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold">Departments</h1>
-          <button
-            onClick={toggleForm}
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-          >
-            {showForm ? "Close" : "Create +"}
-          </button>
+          <div className="flex justify-end">
+  <button
+    onClick={toggleForm}
+    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+  >
+    {showForm ? "Close" : "Create +"}
+  </button>
+</div>
+
         </div>
 
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ">
             <div className="relative p-6 bg-white rounded shadow-lg min-w-[700px]">
-              <button
-                onClick={toggleForm}
-                className="absolute text-2xl font-bold text-gray-500 top-2 right-2 hover:text-red-600"
-                aria-label="Close"
-              >
-                &times;
-              </button>
+              
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input
                   type="text"
@@ -186,22 +190,33 @@ function Departments() {
                   onChange={handleInputChange}
                   className="p-2 border rounded"
                 />
+                <div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
+                <button
+                  type="button"
+                  onClick={toggleForm}
+                  className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                  aria-label="Close"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+                  className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
                 >
-                  Submit
+                  {isEditing ? "Update" : "Create"}
                 </button>
+               
+              </div>
               </form>
             </div>
           </div>
         )}
-
+          {/* table */}
         <div className="overflow-x-auto bg-white rounded shadow">
           <table className="w-full text-sm text-left table-auto">
             <thead className="text-gray-700 bg-gray-100">
               <tr>
-                <th className="px-4 py-2 border">ID</th>
+                <th className="px-4 py-2 border">DIN</th>
                 <th className="px-4 py-2 border">Name</th>
                 <th className="px-4 py-2 border">Description</th>
                 <th className="px-4 py-2 border">Action</th>
@@ -234,31 +249,58 @@ function Departments() {
           </table>
         </div>
 
+{/* delete */}
+{showDeleteConfirm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
+      <h2 className="mb-4 text-lg font-semibold text-center">
+        Are you sure you want to delete this department?
+      </h2>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setShowDeleteConfirm(false)}
+          className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={confirmDelete}
+          className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+{/* //view */}
         {showViewModal && alldepartment && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-            <div className="p-6 bg-white rounded shadow-lg w-50">
+            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
               <h2 className="mb-4 text-xl font-semibold text-center">
-                Receptionist Details
+               Department Deatails
               </h2>
               <ul className="mb-4 space-y-2 text-sm">
-              <li>
-                  <strong>dIN:</strong> {alldepartment.dIN}
+               <li>
+                  <strong>DIN:</strong> {alldepartment.dIN}
                 </li>
                 <li>
-                  <strong>_id:</strong> {alldepartment._id}
+                  <strong>id:</strong> {alldepartment._id}
                 </li>
-                <li>
-                  <strong>name:</strong> {alldepartment.name}
-                </li>
+                
+                
                 <li>
                   <strong>Description:</strong> {alldepartment.description}
                 </li>
                
                 <li>
-                  <strong>_createdAt:</strong> {alldepartment.createdAt}
+                  <strong>CreatedAt:</strong> {alldepartment.createdAt}
                 </li>
                 <li>
-                  <strong>_updatedAt:</strong> {alldepartment.updatedAt}
+                  <strong>UpdatedAt:</strong> {alldepartment.updatedAt}
                 </li>
               </ul>
               <button

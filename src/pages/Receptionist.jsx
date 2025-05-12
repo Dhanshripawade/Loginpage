@@ -136,81 +136,85 @@ function Receptionist() {
       <div className="flex flex-col w-full p-4">
         <h1 className="mb-4 text-xl font-semibold">Receptionists</h1>
 
-        <div className="text-end">
-          <button
-            onClick={toggleCreateForm}
-            className="py-2 mb-5 text-white bg-blue-600 rounded-md px-7"
-          >
-            {showForm ? "Close" : "Create +"}
-          </button>
-        </div>
+        <div className="flex justify-end">
+  <button
+    onClick={toggleCreateForm}
+    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+  >
+    {showForm ? "Close" : "Create +"}
+  </button>
+</div>
+
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <form
-              onSubmit={handleSubmit}
-              className="relative z-50 grid max-w-3xl grid-cols-1 gap-2 p-6 bg-white rounded-md shadow-md md:grid-cols-2"
-            >
-              <button
-                type="button"
-                onClick={toggleCreateForm}
-                className="absolute text-2xl font-bold text-gray-600 top-2 right-2 hover:text-red-600"
-                aria-label="Close"
-              >
-                &times;
-              </button>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <form
+      onSubmit={handleSubmit}
+      className="relative z-50 grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-white rounded-md shadow-md min-w-[700px]"
+    >
+      {[
+        "rID",
+        "name",
+        "username",
+        "email",
+        "phoneNumber",
+        "address",
+        "department",
+        "password",
+      ].map((field) => (
+        <input
+          key={field}
+          type={field === "password" ? "password" : "text"}
+          name={field}
+          placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+          value={formData[field]}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+      ))}
 
-              {[
-                "rID",
-                "name",
-                "username",
-                "email",
-                "phoneNumber",
-                "address",
-                "department",
-                "password",
-              ].map((field) => (
-                <input
-                  key={field}
-                  type={field === "password" ? "password" : "text"}
-                  name={field}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  className={inputClass}
-                />
-              ))}
+      <input
+        type="date"
+        name="dateOfBirth"
+        value={formData.dateOfBirth}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="text"
+        name="gender"
+        list="genders"
+        placeholder="Gender"
+        value={formData.gender}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <datalist id="genders">
+        <option value="Male" />
+        <option value="Female" />
+        <option value="Other" />
+      </datalist>
 
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                className={inputClass}
-              />
-              <input
-                type="text"
-                name="gender"
-                list="genders"
-                placeholder="Gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className={inputClass}
-              />
-              <datalist id="genders">
-                <option value="Male" />
-                <option value="Female" />
-                <option value="Other" />
-              </datalist>
+      {/* Button Row - full width */}
+      <div className="flex justify-end gap-4 mt-4 md:col-span-2">
+      <button
+          type="button"
+          onClick={toggleCreateForm}
+          className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+        >
+          {isEditing ? "Update" : "Create"}
+        </button>
+        
+      </div>
+    </form>
+  </div>
+)}
 
-              <button
-                type="submit"
-                className="w-full col-span-1 px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 md:col-span-2"
-              >
-                {isEditing ? "Update" : "Create"}
-              </button>
-            </form>
-          </div>
-        )}
 
         <div className="relative mt-4 overflow-x-auto">
           <table className="w-full text-sm text-left border border-gray-300">
@@ -269,13 +273,13 @@ function Receptionist() {
 
         {showViewModal && selectedReception && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-            <div className="p-6 bg-white rounded shadow-lg w-50">
+            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
               <h2 className="mb-4 text-xl font-semibold text-center">
                 Receptionist Details
               </h2>
               <ul className="mb-4 space-y-2 text-sm">
                 <li>
-                  <strong>_id:</strong> {selectedReception._id}
+                  <strong>id:</strong> {selectedReception._id}
                 </li>
                 <li>
                   <strong>rID:</strong> {selectedReception.rID}
@@ -290,7 +294,7 @@ function Receptionist() {
                   <strong>Phone:</strong> {selectedReception.phoneNumber}
                 </li>
                 <li>
-                  <strong>address:</strong> {selectedReception.address}
+                  <strong>Address:</strong> {selectedReception.address}
                 </li>
                 <li>
                   <strong>Username:</strong> {selectedReception.username}

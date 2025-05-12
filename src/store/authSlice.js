@@ -73,14 +73,10 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
+      //register
+
       .addCase(registerUser.fulfilled, (state, action) => {
         state.token = action.payload.token;
-        // try {
-        //   const decoded = jwtDecode(action.payload.token);
-        //   state.user = decoded;
-        // } catch (err) {
-        //   state.user = null;
-        // }
         localStorage.setItem('token', action.payload.token);
       })
 

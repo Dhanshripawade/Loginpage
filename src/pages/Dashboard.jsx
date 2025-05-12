@@ -22,6 +22,10 @@ function Dashboard() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  //delete dialog
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+
 
   const toggleForm = () => setShowForm(!showForm);
 
@@ -39,7 +43,7 @@ function Dashboard() {
     gender: "",
     email: "",
     dateOfBirth: "",
-   
+
     specialty: "",
     qualifications: "",
     medicalLicenseNumber: "",
@@ -105,11 +109,8 @@ function Dashboard() {
   useEffect(() => {
     if (consultantId) {
       setconsultantdata(consultantId);
-      
     }
   }, [consultantId]);
-  
-
 
   console.log(consultantId);
 
@@ -134,12 +135,23 @@ function Dashboard() {
   };
 
   const handleDelete = (id) => {
-    window.confirm(
-      "Are you sure deAre you sure you want to delete this consultant?"
-    );
-    dispatch(deleteDoctor(id));
-    window.location.reload();
+    setSelectedDeleteId(id);
+    setShowDeleteConfirm(true);
   };
+//dialog delete
+  const confirmDelete = async () => {
+    try {
+      await dispatch(deleteDoctor(selectedDeleteId)).unwrap();
+      toast.success("Consultant deleted successfully!");
+      dispatch(getConsltantData()); 
+    } catch (err) {
+      toast.error("Failed to delete consultant.");
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedDeleteId(null);
+    }
+  };
+  
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -150,14 +162,15 @@ function Dashboard() {
       <main className="flex-1 p-6 overflow-auto">
         <h1 className="mb-4 text-xl font-semibold">Consultants</h1>
 
-        <div className="mb-4 text-end">
-          <button
-            onClick={toggleForm}
-            className="px-2 py-2 text-white transition duration-200 bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            {showForm ? "Close" : "Create +"}
-          </button>
-        </div>
+        <div className="flex justify-end">
+  <button
+    onClick={toggleForm}
+    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+  >
+    {showForm ? "Close" : "Create +"}
+  </button>
+</div>
+
 
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -165,8 +178,6 @@ function Dashboard() {
               onSubmit={handleSubmit}
               className="relative grid min-w-[700px] grid-cols-1 gap-4 p-6 bg-white rounded-md shadow-lg md:grid-cols-2"
             >
-            
-
               {[
                 { name: "cIN", placeholder: "CIN" },
                 { name: "name", placeholder: "Name" },
@@ -200,20 +211,20 @@ function Dashboard() {
                 />
               ))}
 
-<div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
-                <button
-                  type="submit"
-                  className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
-                >
-                  {isEditing ? "Update" : "Create"}
-                </button>
+              <div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
                 <button
                   type="button"
                   onClick={toggleForm}
-                  className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                  className="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
                   aria-label="Close"
                 >
                   Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
+                >
+                  {isEditing ? "Update" : "Create"}
                 </button>
               </div>
             </form>
@@ -284,9 +295,34 @@ function Dashboard() {
           </table>
         </div>
 
+        {showDeleteConfirm && (
+     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-5">
+    <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
+      <h2 className="mb-4 text-lg font-semibold text-center">
+        Are you sure you want to delete this consultant?
+      </h2>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setShowDeleteConfirm(false)}
+          className="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={confirmDelete}
+          className="px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
         {showViewModal && consultantdata && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="p-6 bg-white rounded shadow-lg w-50">
+            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
               <h2 className="mb-4 text-xl font-semibold text-center">
                 Consultant Details
               </h2>
@@ -306,7 +342,7 @@ function Dashboard() {
                 <li>
                   <strong>DOB:</strong> {consultantdata[0].dateOfBirth}
                 </li>
-                
+
                 <li>
                   <strong>Specialty:</strong> {consultantdata[0].specialty}
                 </li>
@@ -328,7 +364,7 @@ function Dashboard() {
                 <li>
                   <strong>Username:</strong> {consultantdata[0].username}
                 </li>
-               
+
                 <li>
                   <strong>Updated At:</strong> {consultantdata[0].updatedAt}
                 </li>
