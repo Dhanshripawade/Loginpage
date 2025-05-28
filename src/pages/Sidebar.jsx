@@ -43,10 +43,11 @@ const Home = () => {
     <div className="relative flex min-h-screen text-black bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-[100vh] ${collapsed ? "w-20" : "w-64"} 
-        bg-black text-white z-30 transform transition-all duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static`}
-      >
+  className={`fixed top-0 left-0 h-[100vh] ${collapsed ? "w-20" : "w-64"} 
+  bg-black text-white z-30 transform transition-all duration-300 ease-in-out
+  ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static`}
+>
+
         <div className="flex flex-col justify-between h-full px-2 py-4">
         
           <div>

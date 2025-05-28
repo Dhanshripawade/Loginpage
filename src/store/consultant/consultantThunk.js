@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
+
 // Register 
 export const registerDoctor = createAsyncThunk(
   "auth/registerDoctor",
@@ -10,7 +12,7 @@ export const registerDoctor = createAsyncThunk(
     
     try {
       const response = await axios.post(
-        "http://localhost:8000/doctor/register",
+        `${ BASE_URL}/doctor/register`,
         formData,
         {
             headers:{
@@ -30,7 +32,7 @@ export const registerDoctor = createAsyncThunk(
 // Login 
 export  const LoginDoctor = createAsyncThunk("auth/LoginDoctor",async(formData,{rejectWithValue})=>{
     try{
-      const response =await axios.post("http://localhost:8000/doctor/login",formData);
+      const response =await axios.post(`${ BASE_URL}/doctor/login`,formData);
       return response.data
     }catch(err){
       return rejectWithValue(err.response?.data?.message || 'Login failed');

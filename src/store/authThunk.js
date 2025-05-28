@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 
 // Login Thunk
@@ -9,7 +9,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8000/admin/login', credentials);
+      const response = await axios.post(`${ BASE_URL}/admin/login`, credentials);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Login failed");
@@ -22,7 +22,7 @@ export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async (formData, thunkAPI) => {
     try {
-      const response = await axios.post('http://localhost:8000/admin/register', formData);
+      const response = await axios.post(`${ BASE_URL}/admin/register`, formData);
       return response.data;
     } catch (err) {
      
@@ -40,7 +40,7 @@ export  const getConsltantData = createAsyncThunk("auth/getConsltantData",async 
 
   console.log("token for getdata:",token);
   
-    const response = await axios.get("http://localhost:8000/admin/getallconsultant", {
+    const response = await axios.get(`${ BASE_URL}/admin/getallconsultant`, {
       headers: {
         Authorization : token
       }
@@ -58,7 +58,7 @@ export const updateDoctor = createAsyncThunk(
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
     try {
-      const response = await axios.patch(`http://localhost:8000/admin/updateconsultant/${id}`, updatedData, {
+      const response = await axios.patch(`${ BASE_URL}/admin/updateconsultant/${id}`, updatedData, {
         headers: {
           Authorization: token,
         },
@@ -78,7 +78,7 @@ export const viewDoctor = createAsyncThunk(
     try {
       const user = JSON.parse(localStorage.getItem("currentUser"));
       const token = user?.token;
-      const response = await axios.get(`http://localhost:8000/admin/consutantbyid/${cIN}`, {
+      const response = await axios.get(`${ BASE_URL}/admin/consutantbyid/${cIN}`, {
         headers: {
           Authorization: token,
         },
@@ -99,7 +99,7 @@ export const deleteDoctor = createAsyncThunk(
   async (doctorId, { rejectWithValue }) => {
     const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
-      const response = await axios.delete(`http://localhost:8000/admin/deleteConsultant/${doctorId}`, {
+      const response = await axios.delete(`${ BASE_URL}/admin/deleteConsultant/${doctorId}`, {
         headers: {
           Authorization: adminToken
         }
@@ -121,7 +121,7 @@ export const getallreception=createAsyncThunk("auth/getallreception",async(_,{re
     const user = JSON.parse(localStorage.getItem('currentUser'));  
     const token = user?.token;
 
-    const response =await axios.get("http://localhost:8000/admin/allreceptionist",{
+    const response =await axios.get(`${ BASE_URL}/admin/allreceptionist`,{
            headers:{
             Authorization:token
            }
@@ -139,7 +139,7 @@ export const getallreception=createAsyncThunk("auth/getallreception",async(_,{re
   try{
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token=user?.token;
-    const response=await axios.post("http://localhost:8000/admin/registerreceptionist",formData,{
+    const response=await axios.post(`${ BASE_URL}/admin/registerreceptionist`,formData,{
       headers:{
         Authorization:token
       }
@@ -158,7 +158,7 @@ export const deleteReception = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
-      const response = await axios.delete(`http://localhost:8000/admin/deletereceptionist/${_id}`, {
+      const response = await axios.delete(`${ BASE_URL}/admin/deletereceptionist/${_id}`, {
         headers: {
           Authorization: adminToken
         }
@@ -175,7 +175,7 @@ export const viewReception = createAsyncThunk("auth/viewReception", async (rID, 
   try {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
-    const response = await axios.get(`http://localhost:8000/admin/receptionistbyid/${rID}`, {
+    const response = await axios.get(`${ BASE_URL}/admin/receptionistbyid/${rID}`, {
       headers: {
         Authorization: token,
       },
@@ -193,7 +193,7 @@ export const updateReception = createAsyncThunk(
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
     try {
-      const response = await axios.patch(`http://localhost:8000/admin/updatereceptionist/${id}`, updatedData, {
+      const response = await axios.patch(`${ BASE_URL}/admin/updatereceptionist/${id}`, updatedData, {
         headers: {
           Authorization: token,
         },
@@ -214,7 +214,7 @@ export const getallPatient = createAsyncThunk("auth/getallPatient",async(_,{reje
     const user =JSON.parse(localStorage.getItem('currentUser'));
     const token =user?.token;
     
-    const response =await axios.get("http://localhost:8000/admin/getallpatient",{
+    const response =await axios.get(`${ BASE_URL}/admin/getallpatient`,{
                 headers:{
                   Authorization:token
                 }
@@ -232,7 +232,7 @@ export const savepatient =createAsyncThunk("auth/savepatient",async(formData,{re
   try{
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token=user?.token;
-    const response=await axios.post("http://localhost:8000/admin/savepatient",formData,{
+    const response=await axios.post(`${ BASE_URL}/admin/savepatient`,formData,{
       headers:{
         Authorization:token
       }
@@ -253,7 +253,7 @@ export const deletePatient = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
-      const response = await axios.delete(`http://localhost:8000/admin/deletepatient/${_id}`, {
+      const response = await axios.delete(`${ BASE_URL}/admin/deletepatient/${_id}`, {
         headers: {
           Authorization: adminToken
         }
@@ -272,7 +272,7 @@ export const updatePatients = createAsyncThunk(
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
     try {
-      const response = await axios.patch(`http://localhost:8000/admin/updatepatient/${id}`, updatedData, {
+      const response = await axios.patch(`${ BASE_URL}/admin/updatepatient/${id}`, updatedData, {
         headers: {
           Authorization: token,
         },
@@ -295,7 +295,7 @@ export const viewPatient = createAsyncThunk(
       const user = JSON.parse(localStorage.getItem("currentUser"));
       const token = user?.token;
       const response = await axios.get(
-        `http://localhost:8000/admin/getbyid/${id}`,
+        `${ BASE_URL}/admin/getbyid/${id}`,
         {
           headers: {
             Authorization: token,
@@ -313,22 +313,7 @@ export const viewPatient = createAsyncThunk(
   }
 );
 
-// export const viewPatient = createAsyncThunk("auth/viewPatient" , async (id , thunkAPI) =>
-// {
-//   try{
-//     const user = JSON.parse(localStorage.getItem("currentUser"));
-//     const token = user?.token;
-//     const response = await axios.get(`http://localhost:8000/admin/getbyid/${id}`,{
-//       headers:{
-//         Authorization : token ,
-//       },
-//     });
-//     return response.data.data;
-//   }
-//   catch(err){
-//     return thunkAPI.rejectWithValue(err.response?.data?.message || "Get data by ID failed");
-//   }
-// });
+
 
 //get department
 export const getallDepartment = createAsyncThunk("auth/getallDepartment",async(_,{rejectWithValue})=>{
@@ -336,7 +321,7 @@ export const getallDepartment = createAsyncThunk("auth/getallDepartment",async(_
     const user =JSON.parse(localStorage.getItem('currentUser'));
     const token =user?.token;
     
-    const response =await axios.get("http://localhost:8000/admin/alldepartment",{
+    const response =await axios.get(`${ BASE_URL}/admin/alldepartment`,{
                 headers:{
                   Authorization:token
                 }
@@ -355,7 +340,7 @@ export const registerDepartment =createAsyncThunk("auth/registerDepartment",asyn
   try{
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token=user?.token;
-    const response=await axios.post("http://localhost:8000/admin/createdepartment",formData,{
+    const response=await axios.post(`${ BASE_URL}/admin/createdepartment`,formData,{
       headers:{
         Authorization:token
       }
@@ -376,7 +361,7 @@ export const deleteDepartment = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     const adminToken = JSON.parse(localStorage.getItem("currentUser"))?.token;
     try {
-      const response = await axios.delete(`http://localhost:8000/admin/deletedepartment/${_id}`, {
+      const response = await axios.delete(`${ BASE_URL}/admin/deletedepartment/${_id}`, {
         headers: {
           Authorization: adminToken
         }
@@ -393,7 +378,7 @@ export const viewDepartment = createAsyncThunk("auth/viewDepartment", async (dIN
   try {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const token = user?.token;
-    const response = await axios.get(`http://localhost:8000/admin/departmentbyid/${dIN}`, {
+    const response = await axios.get(`${ BASE_URL}/admin/departmentbyid/${dIN}`, {
       headers: {
         Authorization: token,
       },
@@ -412,7 +397,7 @@ export const updateDepartment = createAsyncThunk("auth/updateDepartment"  ,
       const user = JSON.parse(localStorage.getItem("currentUser"));
       const token = user?.token;
       try{
-        const response = await axios.patch(`http://localhost:8000/admin/updatedepartment/${id}`, updatedData ,{
+        const response = await axios.patch(`${ BASE_URL}/admin/updatedepartment/${id}`, updatedData ,{
           headers : {
             Authorization : token,
           },

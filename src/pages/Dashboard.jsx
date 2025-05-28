@@ -129,7 +129,7 @@ const Dashboard = () => {
 };
 
 const StatCard = ({ icon, title, count, subtitle, change, changeColor }) => (
-  <div className="flex items-start gap-4 p-4 transition duration-300 transform shadow-lg bg-gradient-to-r from-green-500 to-blue-800 rounded-xl hover:shadow-2xl hover:scale-105">
+  <div className="flex items-start gap-4 p-4 transition duration-300 transform bg-gray-600 shadow-lg rounded-xl hover:shadow-2xl hover:scale-105">
     <div className="p-3 text-white bg-white rounded-full">{icon}</div>
     <div className="flex flex-col text-white">
       <p className="text-sm font-medium">{title}</p>
