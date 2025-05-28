@@ -64,10 +64,10 @@ function Receptionist() {
         await dispatch(
           updateReception({ id: editingId, updatedData: formData })
         ).unwrap();
-        toast.success("Consultant updated successfully!");
+        // toast.success("Consultant updated successfully!");
       } else {
         await dispatch(registerReception(formData)).unwrap();
-        toast.success("Consultant created successfully!");
+        // toast.success("Consultant created successfully!");
       }
 
       setFormData({
@@ -87,8 +87,9 @@ function Receptionist() {
       dispatch(getallreception());
     } catch (err) {
       console.error("Error submitting form:", err);
-      toast.error("Error occurred, please try again!");
+      // toast.error("Error occurred, please try again!");
     }
+    window.location.reload();
   };
 
   const handleDelete = (id) => {
@@ -272,10 +273,17 @@ function Receptionist() {
         </div>
 
         {showViewModal && selectedReception && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
-              <h2 className="mb-4 text-xl font-semibold text-center">
-                Receptionist Details
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+            <div className="relative w-full max-w-md p-6 mx-auto mt-20 bg-white shadow-xl rounded-xl">
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="absolute text-xl font-bold text-red-600 top-3 right-3 hover:text-red-800"
+              >
+                ×
+              </button>
+
+              <h2 className="mb-4 text-2xl font-bold text-gray-800 ">
+                Receptionists Details
               </h2>
               <ul className="mb-4 space-y-2 text-sm">
                 <li>
@@ -318,12 +326,7 @@ function Receptionist() {
                   <strong>createdAt:</strong> {selectedReception.createdAt}
                 </li>
               </ul>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
-              >
-                Close
-              </button>
+             
             </div>
           </div>
         )}

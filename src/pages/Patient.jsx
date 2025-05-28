@@ -9,7 +9,7 @@ import {
 } from "../store/authThunk";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaEye, FaEdit, FaTrash  } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 
 import Home from "./Sidebar";
@@ -24,8 +24,7 @@ function Patient() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [selectedDeleteId, setSelectedDeleteId] = useState(null);
-
+  const [selectedDeleteId, setSelectedDeleteId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -103,9 +102,7 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
       setSelectedDeleteId(null);
     }
   };
-    
 
-  
   const handleEdit = (item) => {
     setFormData({
       name: item.name || "",
@@ -140,14 +137,13 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
         <h1 className="mb-4 text-2xl">Patients</h1>
 
         <div className="flex justify-end">
-  <button
-    onClick={toggleCreateForm}
-    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-  >
-    {showForm ? "Close" : "Create +"}
-  </button>
-</div>
-
+          <button
+            onClick={toggleCreateForm}
+            className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+          >
+            {showForm ? "Close" : "Create +"}
+          </button>
+        </div>
 
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -221,7 +217,7 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
                 className="p-2 border rounded"
               />
               <div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
-              <button
+                <button
                   type="button"
                   onClick={toggleCreateForm}
                   className="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
@@ -235,14 +231,12 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
                 >
                   {isEditing ? "Update" : "Create"}
                 </button>
-                
               </div>
             </form>
           </div>
         )}
 
-        {status === "loading" && <p>Loading...</p>}
-        {status === "failed" && <p className="text-red-500">Error: {error}</p>}
+        
 
         {status === "succeeded" && patient.length > 0 && (
           <table className="min-w-full mt-6 text-sm border border-gray-300">
@@ -291,46 +285,47 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
 
         {/* //delete */}
         {showDeleteConfirm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
-      <h2 className="mb-4 text-lg font-semibold text-center">
-        Are you sure you want to delete this consultant?
-      </h2>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setShowDeleteConfirm(false)}
-          className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={confirmDelete}
-          className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
+              <h2 className="mb-4 text-lg font-semibold text-center">
+                Are you sure you want to delete this consultant?
+              </h2>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {opendata && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
-            <h2 className="mb-4 text-xl font-semibold text-center">
+          
+
+              
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+            <div className="relative w-full max-w-md p-6 mx-auto mt-20 bg-white shadow-xl rounded-xl">
+              <button
+                onClick={() => setopendata(false)}
+                className="absolute text-xl font-bold text-red-600 top-3 right-3 hover:text-red-800"
+              >
+                ×
+              </button>
+
+              <h2 className="mb-4 text-2xl font-bold text-gray-800 ">
                 Patients Details
               </h2>
-              
-                      <button 
-                        
-                        onClick={() => setopendata(false)} title="Cancel">
-                       <MdCancel className="right-0 bg-red-600 rounded top-2 hover:bg-red-700"/>
-                      </button>
-                  
-                    {/* <button onClick={() => handleEdit(item)} title="Edit">
-                        <FaEdit className="text-green-600 hover:text-green-700" />
-                      </button> */}
+             
+
               {Array.isArray(selecteddata) &&
                 selecteddata.map((item) => (
                   <div key={item._id}>
@@ -355,14 +350,13 @@ const [selectedDeleteId, setSelectedDeleteId] = useState(null);
                     <h1 className="m-2 ">
                       <b>Patienttype:</b> {item.patienttype}
                     </h1>
-                  
+
                     <h1 className="m-2 ">
                       <b>CreatedAt:</b> {item.createdAt}
                     </h1>
                     <h1 className="m-2 ">
                       <b>UpdatedAt:</b> {item.updatedAt}
                     </h1>
-                   
                   </div>
                 ))}
             </div>

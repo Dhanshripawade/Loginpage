@@ -84,8 +84,8 @@ export const viewDoctor = createAsyncThunk(
         },
       });
 
-      console.log("API Response:", response.data.data); // Debugging
-      return response.data.data; // Ensure this is the consultant object
+      console.log("API Response:", response.data.data);
+      return response.data.data; 
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Get data by ID failed");
     }

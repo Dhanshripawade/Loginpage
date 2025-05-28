@@ -1,391 +1,146 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { registerDoctor } from "../store/consultant/consultantThunk";
+import React from 'react';
+import Home from './Sidebar';
 import {
-  deleteDoctor,
-  updateDoctor,
-  getConsltantData,
-  viewDoctor,
-} from "../store/authThunk";
-import Home from "./Sidebar";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+  FaCalendarCheck,
+  FaUsers,
+  FaBuilding,
+  FaUserNurse
+} from 'react-icons/fa';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-function Dashboard() {
-  const dispatch = useDispatch();
+const data = [
+  { month: 'Jan', current: 40, previous: 30 },
+  { month: 'Feb', current: 60, previous: 45 },
+  { month: 'Mar', current: 70, previous: 50 },
+  { month: 'Apr', current: 75, previous: 55 },
+  { month: 'May', current: 85, previous: 65 },
+  { month: 'Jun', current: 95, previous: 70 },
+  { month: 'Jul', current: 70, previous: 60 },
+  { month: 'Aug', current: 80, previous: 63 },
+  { month: 'Sep', current: 88, previous: 67 },
+  { month: 'Oct', current: 92, previous: 72 },
+  { month: 'Nov', current: 97, previous: 78 },
+  { month: 'Dec', current: 100, previous: 82 },
+];
 
-  const { consultant, consultantId } = useSelector((state) => state.auth);
-  const [consultantAllData, setconsultantAllData] = useState(null);
-  const [consultantdata, setconsultantdata] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  //delete dialog
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [selectedDeleteId, setSelectedDeleteId] = useState(null);
-
-
-  const toggleForm = () => setShowForm(!showForm);
-
-  useEffect(() => {
-    dispatch(getConsltantData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setconsultantAllData(consultant);
-  }, [consultant]);
-
-  const [formData, setFormData] = useState({
-    cIN: "",
-    name: "",
-    gender: "",
-    email: "",
-    dateOfBirth: "",
-
-    specialty: "",
-    qualifications: "",
-    medicalLicenseNumber: "",
-    phoneNumber: "",
-    yearsOfExperience: "",
-    username: "",
-    password: "",
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        await dispatch(
-          updateDoctor({ id: editingId, updatedData: formData })
-        ).unwrap();
-        toast.success("Consultant updated successfully!");
-      } else {
-        await dispatch(registerDoctor(formData)).unwrap();
-        toast.success("Consultant created successfully!");
-      }
-
-      setFormData({
-        cIN: "",
-        name: "",
-        gender: "",
-        email: "",
-        dateOfBirth: "",
-        specialty: "",
-        qualifications: "",
-        medicalLicenseNumber: "",
-        phoneNumber: "",
-        yearsOfExperience: "",
-        username: "",
-        password: "",
-      });
-      setShowForm(false);
-      setIsEditing(false);
-      setEditingId(null);
-      dispatch(getConsltantData());
-    } catch (err) {
-      console.error("Error submitting form:", err);
-      toast.error("Error occurred, please try again!");
-    }
-  };
-
-  const handleView = async (cIN) => {
-    try {
-      const result = await dispatch(viewDoctor(cIN)).unwrap();
-      setconsultantdata(result);
-      setShowViewModal(true);
-    } catch (error) {
-      console.error("View error:", error);
-      toast.error("Failed to load consultant details.");
-    }
-  };
-
-  useEffect(() => {
-    if (consultantId) {
-      setconsultantdata(consultantId);
-    }
-  }, [consultantId]);
-
-  console.log(consultantId);
-
-  const handleEdit = (item) => {
-    setFormData({
-      cIN: item.cIN || "",
-      name: item.name || "",
-      gender: item.gender || "",
-      email: item.email || "",
-      dateOfBirth: item.dateOfBirth || "",
-      specialty: item.specialty || "",
-      qualifications: item.qualifications || "",
-      medicalLicenseNumber: item.medicalLicenseNumber || "",
-      phoneNumber: item.phoneNumber || "",
-      yearsOfExperience: item.yearsOfExperience || "",
-      username: item.username || "",
-      password: "",
-    });
-    setShowForm(true);
-    setIsEditing(true);
-    setEditingId(item._id || item.id);
-  };
-
-  const handleDelete = (id) => {
-    setSelectedDeleteId(id);
-    setShowDeleteConfirm(true);
-  };
-//dialog delete
-  const confirmDelete = async () => {
-    try {
-      await dispatch(deleteDoctor(selectedDeleteId)).unwrap();
-      toast.success("Consultant deleted successfully!");
-      dispatch(getConsltantData()); 
-    } catch (err) {
-      toast.error("Failed to delete consultant.");
-    } finally {
-      setShowDeleteConfirm(false);
-      setSelectedDeleteId(null);
-    }
-  };
-  
-
+const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="">
-        <Home />
-      </div>
+      <Home />
 
-      <main className="flex-1 p-6 overflow-auto">
-        <h1 className="mb-4 text-xl font-semibold">Consultants</h1>
+      <div className="flex-1 p-4">
+        <h1 className="mb-6 text-3xl font-bold text-gray-900 ">Doctor's Dashboard</h1>
 
-        <div className="flex justify-end">
-  <button
-    onClick={toggleForm}
-    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-  >
-    {showForm ? "Close" : "Create +"}
-  </button>
-</div>
-
-
-        {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <form
-              onSubmit={handleSubmit}
-              className="relative grid min-w-[700px] grid-cols-1 gap-4 p-6 bg-white rounded-md shadow-lg md:grid-cols-2"
-            >
-              {[
-                { name: "cIN", placeholder: "CIN" },
-                { name: "name", placeholder: "Name" },
-                { name: "username", placeholder: "Username" },
-                { name: "password", placeholder: "Password", type: "password" },
-                { name: "email", placeholder: "Email", type: "email" },
-                { name: "specialty", placeholder: "Specialty" },
-                { name: "phoneNumber", placeholder: "Phone Number" },
-                { name: "gender", placeholder: "Gender" },
-                {
-                  name: "medicalLicenseNumber",
-                  placeholder: "Medical License No.",
-                  type: "number",
-                },
-                { name: "dateOfBirth", placeholder: "DOB", type: "date" },
-                { name: "qualifications", placeholder: "Qualification" },
-                {
-                  name: "yearsOfExperience",
-                  placeholder: "Years of Experience",
-                  type: "number",
-                },
-              ].map(({ name, placeholder, type = "text" }) => (
-                <input
-                  key={name}
-                  type={type}
-                  name={name}
-                  placeholder={placeholder}
-                  value={formData[name]}
-                  className="p-2 border rounded"
-                  onChange={handleInputChange}
-                />
-              ))}
-
-              <div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
-                <button
-                  type="button"
-                  onClick={toggleForm}
-                  className="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
-                  aria-label="Close"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
-                >
-                  {isEditing ? "Update" : "Create"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        <div className="relative mt-4 overflow-x-auto">
-          <table className="w-full text-sm text-left border border-gray-300">
-            <thead className="text-gray-700 bg-gray-100">
-              <tr>
-                {[
-                  "CIN",
-                  "Name",
-                  "Gender",
-                  "DOB",
-                  "Specialty",
-                  "Qualifications",
-                  "License No.",
-                  "Experience (Years)",
-                  "Contact",
-                  "Username",
-                  "Actions",
-                ].map((header) => (
-                  <th key={header} className="px-4 py-2 border">
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {consultantAllData?.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{item.cIN}</td>
-                  <td className="px-4 py-2 border">{item.name}</td>
-                  <td className="px-4 py-2 border">{item.gender}</td>
-                  <td className="px-4 py-2 border">{item.dateOfBirth}</td>
-                  <td className="px-4 py-2 border">{item.specialty}</td>
-                  <td className="px-4 py-2 border">{item.qualifications}</td>
-                  <td className="px-4 py-2 border">
-                    {item.medicalLicenseNumber}
-                  </td>
-                  <td className="px-4 py-2 border">{item.yearsOfExperience}</td>
-                  <td className="px-4 py-2 border">
-                    {item.email}
-                    <span className="flex">{item.phoneNumber}</span>
-                  </td>
-                  <td className="px-4 py-2 border">{item.username}</td>
-                  <td className="px-4 py-2 border">
-                    <div className="flex justify-center gap-2">
-                      <FaEye
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => handleView(item.cIN)}
-                      />
-                      <button onClick={() => handleEdit(item)} title="Edit">
-                        <FaEdit className="text-green-600 hover:text-green-700" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item._id || item.id)}
-                        title="Delete"
-                      >
-                        <FaTrash className="text-red-600 hover:text-red-700" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Cards */}
+        <div className="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            icon={<FaCalendarCheck className="text-2xl text-cyan-600" />}
+            title="Today's Visits"
+            count="12"
+            subtitle="Thu Jun 17"
+            change="+1.29%"
+            changeColor="text-red-600"
+          />
+          <StatCard
+            icon={<FaUsers className="text-2xl text-sky-600" />}
+            title="Patients"
+            count="287"
+            subtitle="Last 7 days"
+            change="+1.29%"
+            changeColor="text-red-600"
+          />
+          <StatCard
+            icon={<FaBuilding className="text-2xl text-indigo-600" />}
+            title="Departments"
+            count="82"
+            subtitle="Last 7 days"
+            change="-25%"
+            changeColor="text-red-600"
+          />
+          <StatCard
+            icon={<FaUserNurse className="text-2xl text-indigo-600" />}
+            title="Receptionsits"
+            count="22"
+            subtitle="Last 7 days"
+            change="+2.42%"
+            changeColor="text-red-600"
+          />
         </div>
 
-        {showDeleteConfirm && (
-     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-5">
-    <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
-      <h2 className="mb-4 text-lg font-semibold text-center">
-        Are you sure you want to delete this consultant?
-      </h2>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setShowDeleteConfirm(false)}
-          className="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={confirmDelete}
-          className="px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        {/* Chart */}
+        <div className="p-6 mb-8 bg-white shadow rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-700">Visit Statistics</h2>
+            <button className="px-3 py-1 text-sm text-gray-600 border rounded hover:bg-gray-100">
+              Filters
+            </button>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="current" stroke="#0ea5e9" name="Current year" />
+              <Line type="monotone" dataKey="previous" stroke="#a5b4fc" name="Previous year" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-
-        {showViewModal && consultantdata && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
-              <h2 className="mb-4 text-xl font-semibold text-center">
-                Consultant Details
-              </h2>
-              <ul className="mb-4 space-y-2 text-sm">
-                <li>
-                  <strong>cIN:</strong> {consultantdata[0].cIN}
-                </li>
-                <li>
-                  <strong>Name:</strong> {consultantdata[0].name}
-                </li>
-                <li>
-                  <strong>Gender:</strong> {consultantdata[0].gender}
-                </li>
-                <li>
-                  <strong>Email:</strong> {consultantdata[0].email}
-                </li>
-                <li>
-                  <strong>DOB:</strong> {consultantdata[0].dateOfBirth}
-                </li>
-
-                <li>
-                  <strong>Specialty:</strong> {consultantdata[0].specialty}
-                </li>
-                <li>
-                  <strong>Qualification:</strong>{" "}
-                  {consultantdata[0].qualifications}
-                </li>
-                <li>
-                  <strong>Medical Licence No:</strong>{" "}
-                  {consultantdata[0].medicalLicenseNumber}
-                </li>
-                <li>
-                  <strong>Phone:</strong> {consultantdata[0].phoneNumber}
-                </li>
-                <li>
-                  <strong>Experience (Years):</strong>{" "}
-                  {consultantdata[0].yearsOfExperience}
-                </li>
-                <li>
-                  <strong>Username:</strong> {consultantdata[0].username}
-                </li>
-
-                <li>
-                  <strong>Updated At:</strong> {consultantdata[0].updatedAt}
-                </li>
-                <li>
-                  <strong>Created At:</strong> {consultantdata[0].createdAt}
-                </li>
-              </ul>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
-              >
-                Close
+        {/* Appointments */}
+        {/* <div className="p-6 bg-white shadow rounded-xl">
+          <h2 className="mb-4 text-lg font-semibold text-gray-700">Appointments</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex gap-4 text-sm font-medium text-blue-600">
+              <button className="underline">Today's visits</button>
+              <button className="text-gray-500 hover:text-blue-600">Upcoming visits</button>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search"
+                className="px-3 py-1 text-sm border rounded focus:outline-none"
+              />
+              <button className="px-3 py-1 text-sm text-gray-600 border rounded hover:bg-gray-100">
+                Filters
               </button>
             </div>
           </div>
-        )}
 
-        <ToastContainer />
-      </main>
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center gap-4">
+              <img
+                src="https://randomuser.me/api/portraits/women/44.jpg"
+                alt="patient"
+                className="w-12 h-12 rounded-full"
+              />
+              <div>
+                <p className="font-semibold text-gray-800">Sophia Khan</p>
+                <p className="text-sm text-gray-500">Online consultation</p>
+              </div>
+            </div>
+            <div className="text-sm text-gray-500">Wed Jun 16 • 4:00PM</div>
+          </div>
+        </div> */}
+      </div>
     </div>
   );
-}
+};
+
+const StatCard = ({ icon, title, count, subtitle, change, changeColor }) => (
+  <div className="flex items-start gap-4 p-4 transition duration-300 transform shadow-lg bg-gradient-to-r from-green-500 to-blue-800 rounded-xl hover:shadow-2xl hover:scale-105">
+    <div className="p-3 text-white bg-white rounded-full">{icon}</div>
+    <div className="flex flex-col text-white">
+      <p className="text-sm font-medium">{title}</p>
+      <p className="text-3xl font-bold">{count}</p>
+      <div className="flex items-center gap-2 mt-2 text-xs">
+        <span className={`${changeColor} font-semibold`}>{change}</span>
+        <span className="text-white opacity-80">{subtitle}</span>
+      </div>
+    </div>
+  </div>
+);
+
 
 export default Dashboard;

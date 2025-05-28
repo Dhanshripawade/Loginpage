@@ -20,7 +20,6 @@ function Departments() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
 
-
   const [formData, setFormData] = useState({
     dIN: "",
     name: "",
@@ -95,7 +94,7 @@ function Departments() {
     try {
       await dispatch(deleteDepartment(selectedDeleteId)).unwrap();
       toast.success("Department deleted successfully!");
-      dispatch(getallDepartment()); 
+      dispatch(getallDepartment());
     } catch (err) {
       toast.error("Failed to delete department.");
     } finally {
@@ -103,8 +102,7 @@ function Departments() {
       setSelectedDeleteId(null);
     }
   };
-  
-  
+
   //view
   const [showViewModal, setShowViewModal] = useState(false);
   const [alldepartment, setAlldepartment] = useState([]);
@@ -150,21 +148,19 @@ function Departments() {
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold">Departments</h1>
-          <div className="flex justify-end">
-  <button
-    onClick={toggleForm}
-    className="flex items-center gap-2 px-6 py-2 mb-5 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-  >
-    {showForm ? "Close" : "Create +"}
-  </button>
-</div>
-
+          <div className="flex justify-end mt-10">
+            <button
+              onClick={toggleForm}
+              className="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white transition-colors duration-200 bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+            >
+              {showForm ? "Close" : "Create +"}
+            </button>
+          </div>
         </div>
 
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ">
             <div className="relative p-6 bg-white rounded shadow-lg min-w-[700px]">
-              
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input
                   type="text"
@@ -191,27 +187,26 @@ function Departments() {
                   className="p-2 border rounded"
                 />
                 <div className="flex justify-end gap-3 mt-4 font-semibold md:col-span-2">
-                <button
-                  type="button"
-                  onClick={toggleForm}
-                  className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
-                  aria-label="Close"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
-                >
-                  {isEditing ? "Update" : "Create"}
-                </button>
-               
-              </div>
+                  <button
+                    type="button"
+                    onClick={toggleForm}
+                    className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                    aria-label="Close"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+                  >
+                    {isEditing ? "Update" : "Create"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
         )}
-          {/* table */}
+        {/* table */}
         <div className="overflow-x-auto bg-white rounded shadow">
           <table className="w-full text-sm text-left table-auto">
             <thead className="text-gray-700 bg-gray-100">
@@ -249,53 +244,57 @@ function Departments() {
           </table>
         </div>
 
-{/* delete */}
-{showDeleteConfirm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
-      <h2 className="mb-4 text-lg font-semibold text-center">
-        Are you sure you want to delete this department?
-      </h2>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setShowDeleteConfirm(false)}
-          className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={confirmDelete}
-          className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        {/* delete */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="p-6 bg-white rounded shadow-lg min-w-[350px]">
+              <h2 className="mb-4 text-lg font-semibold text-center">
+                Are you sure you want to delete this department?
+              </h2>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-
-
-{/* //view */}
+        {/* //view */}
         {showViewModal && alldepartment && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-            <div className="p-6 bg-white rounded shadow-lg min-w-[450px]">
-              <h2 className="mb-4 text-xl font-semibold text-center">
-               Department Deatails
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+            <div className="relative w-full max-w-md p-6 mx-auto mt-20 bg-white shadow-xl rounded-xl">
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="absolute text-xl font-bold text-red-600 top-3 right-3 hover:text-red-800"
+              >
+                ×
+              </button>
+
+              <h2 className="mb-4 text-2xl font-bold text-gray-800 ">
+                Department Details
               </h2>
               <ul className="mb-4 space-y-2 text-sm">
-               <li>
+                <li>
                   <strong>DIN:</strong> {alldepartment.dIN}
                 </li>
                 <li>
                   <strong>id:</strong> {alldepartment._id}
                 </li>
-                
-                
+
                 <li>
                   <strong>Description:</strong> {alldepartment.description}
                 </li>
-               
+
                 <li>
                   <strong>CreatedAt:</strong> {alldepartment.createdAt}
                 </li>
@@ -303,12 +302,6 @@ function Departments() {
                   <strong>UpdatedAt:</strong> {alldepartment.updatedAt}
                 </li>
               </ul>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="w-full px-4 py-2 mt-2 text-white bg-red-600 rounded hover:bg-red-700"
-              >
-                Close
-              </button>
             </div>
           </div>
         )}
